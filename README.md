@@ -21,7 +21,7 @@ a minimum and to relieve the validator from having to check on their hardware as
 5. Run the script on your VM with nohup
 6. Sit back and validate :)
 ```
-sudo nohup python3 validator_checker.py
+sudo nohup python3 validator_checker.py &
 ```
 
 # Features

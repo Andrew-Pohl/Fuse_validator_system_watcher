@@ -24,7 +24,7 @@ class Main():
 	def checkSystemAttributes(self):
 		total, used, free = shutil.disk_usage("/")
 		self.table['HDD']['value'] = free/(1024*1024)
-		self.table['RAM']['value'] = psutil.virtual_memory().free/(1024*1024)
+		self.table['RAM']['value'] = psutil.virtual_memory().available/(1024*1024)
 		oneMin, fiveMin, tenMin = [x / psutil.cpu_count() * 100 for x in psutil.getloadavg()]
 		self.table['CPU']['value'] = fiveMin
 		self.table['FuseBalance']['value'] = float(int(self.apiFuseAccount.get_balance()) * 1e-18)

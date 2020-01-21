@@ -3,7 +3,7 @@ The system watcher python script can be used by FUSE validators to autonomously 
 The script will notify you via email if any of the thresholds have been breached to ensure that network down time is kept to
 a minimum and to relieve the validator from having to check on their hardware as often.
 
-#Depenedices
+# Depenedices
 ```
 • Python 3
 • PyQt5 - for threading and event queues
@@ -13,7 +13,7 @@ a minimum and to relieve the validator from having to check on their hardware as
 • Fuse-Explorer-API
 ```
 
-#How to use
+# How to use
 1. Create a new gmail account
 2. Enable the GMail API for the new gmail account https://developers.google.com/gmail/api/quickstart/python
 3. Set up the config.ini file as you wish
@@ -24,7 +24,7 @@ a minimum and to relieve the validator from having to check on their hardware as
 sudo nohup python3 validator_checker.py
 ```
 
-#Features
+# Features
 Monitor types:
 ```
 • Average CPU usage
@@ -34,7 +34,8 @@ Monitor types:
 • ETH balance
 ```
 
-Responds to email request using the following subject lines
+Responds to email request using the following subject lines, the authorisedReceiver setting in the config file stops the response
+from email request other than the one specified in the config file.
 ```
 • "STATUS" - returns the current value of the monitors
 • "THRESHOLD_GET" - returns the current threshold values

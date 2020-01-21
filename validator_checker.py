@@ -76,8 +76,8 @@ class Main():
 
 
 	def checkIndoundEmails(self):
-		if (self.recieveQueue.qsize() != 0):
-			message = self.recieveQueue.get()
+		if (self.receiveQueue.qsize() != 0):
+			message = self.receiveQueue.get()
 			subject = message.subject
 			Report = {}
 			Report['reportType'] = subject
@@ -123,8 +123,8 @@ class Main():
 		config.read("config.ini")
 
 		self.sendQueue = queue.Queue()
-		self.recieveQueue = queue.Queue()
-		ui = email_client(self.sendQueue, self.recieveQueue, dict(config['SETUP']))
+		self.receiveQueue = queue.Queue()
+		ui = email_client(self.sendQueue, self.receiveQueue, dict(config['SETUP']))
 
 		self.ThresholdDict = dict(config.items('THRESHOLDS'))
 

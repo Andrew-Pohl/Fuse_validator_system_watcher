@@ -10,12 +10,12 @@ recieveKeywords = ['KILL', 'STATUS', 'THRESHOLD_SET', 'THRESHOLD_GET']
 class emailThread(QtCore.QThread):
 
 
-    def __init__(self, emailClient, sendQueue, recieveQueue, config):
+    def __init__(self, emailClient, sendQueue, receiveQueue, config):
         self.emailClient = emailClient
         self.sendQueue = sendQueue
-        self.recieveQueue = recieveQueue
+        self.receiveQueue = receiveQueue
         self.emailAddress = config['emailAddressToSend']
-        self.AuthorisedReciever = config['authorisedReciever']
+        self.AuthorisedReceiver = config['authorisedReceiver']
         QtCore.QThread.__init__(self)
 
     def run(self):
@@ -27,7 +27,6 @@ class emailThread(QtCore.QThread):
                         ezgmail.send(self.emailAddress ,'ALERT ' + str(message['type']) , 'warning triggered for ' + str(message['type']) + ' value = ' + str(message['value']))
                     elif(message['reportType'] == 'STATUS' or message['reportType'] == 'THRESHOLD_GET'):
                         ezgmail.send(self.emailAddress, message['reportType'], message['value'])
-                        placeHolder =1
 
 
             #check any inbound emails
@@ -35,12 +34,12 @@ class emailThread(QtCore.QThread):
             if(len(unreadThreads) != 0):
                 for email in unreadThreads:
                     msg = email.messages[0]
-                    if(int(self.AuthorisedReciever) == 1):
+                    if(int(self.AuthorisedReceiver) == 1):
                         address = msg.sender[msg.sender.index('<') + 1:msg.sender.index('>')]
                         if address != self.emailAddress:
                             continue
                     if msg.subject in recieveKeywords:
-                        self.recieveQueue.put(msg)
+                        self.receiveQueue.put(msg)
 
                 ezgmail.markAsRead(unreadThreads)
 

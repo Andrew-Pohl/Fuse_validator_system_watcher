@@ -27,7 +27,9 @@ class Main():
 		self.table['RAM']['value'] = psutil.virtual_memory().available/(1024*1024)
 		oneMin, fiveMin, tenMin = [x / psutil.cpu_count() * 100 for x in psutil.getloadavg()]
 		self.table['CPU']['value'] = fiveMin
-		self.table['FuseBalance']['value'] = float(int(self.apiFuseAccount.get_balance()) * 1e-18)
+		fuseBalance = self.apiFuseAccount.get_balance()
+		if fuseBalance is not None:
+			self.table['FuseBalance']['value'] = float(int(fuseBalance) * 1e-18)
 		if platform == "linux" or platform == "linux2":
 			s = subprocess.check_output('docker ps', shell=True)
 			if str(s).find('fusenet') != -1:

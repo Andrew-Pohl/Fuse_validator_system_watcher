@@ -13,6 +13,7 @@ import shutil
 import subprocess
 from Fuse_Explorer_API.account import Account
 from sys import platform
+import contractABI
 
 statusTypes = ['RAM', 'HDD', 'CPU', 'ETHBalance', 'FuseBalance', 'validating', 'dockerRunning']
 subKeys = ['value', 'report', 'timeStamp']
@@ -27,9 +28,20 @@ class Main():
 		self.table['RAM']['value'] = psutil.virtual_memory().available/(1024*1024)
 		oneMin, fiveMin, tenMin = [x / psutil.cpu_count() * 100 for x in psutil.getloadavg()]
 		self.table['CPU']['value'] = fiveMin
-		fuseBalance = self.apiFuseAccount.get_balance()
+		fuseBalance = self.web3Fuse.eth.getBalance(self.address)
 		if fuseBalance is not None:
 			self.table['FuseBalance']['value'] = float(int(fuseBalance) * 1e-18)
+
+		activeValidator = self.fuseConsensusContract.functions.getValidators().call()
+		validating = self.fuseConsensusContract.functions.isValidator(self.address).call()
+		if(self.address in activeValidator):
+			if(validating):
+				self.table['validating']['value'] = "True"
+				self.table['validating']['report'] = 0
+			else:
+				self.table['validating']['value'] = "False"
+				self.table['validating']['report'] = 1
+
 		if platform == "linux" or platform == "linux2":
 			s = subprocess.check_output('docker ps', shell=True)
 			if str(s).find('fusenet') != -1:
@@ -55,7 +67,7 @@ class Main():
 		self.sendErrorReport()
 
 	def checkEthBalance(self):
-		self.table['ETHBalance']['value'] = float(self.web3.eth.getBalance(self.address) / 1e18)
+		self.table['ETHBalance']['value'] = float(self.web3Eth.eth.getBalance(self.address) / 1e18)
 		if self.table['ETHBalance']['value'] < (type(self.table['ETHBalance']['value'])(self.ThresholdDict['ETHBalance'])):
 			self.table['ETHBalance']['report'] = 1
 		else:
@@ -135,10 +147,13 @@ class Main():
 				print("Error in config file ", keys, " not a valid type")
 				exit(1)
 
-		self.web3 = Web3(Web3.HTTPProvider(config['SETUP']['infura']))
+		self.web3Eth = Web3(Web3.HTTPProvider(config['SETUP']['infura']))
+
+		self.web3Fuse = Web3(Web3.HTTPProvider(contractABI.RPC_ADDRESS))
+		self.fuseConsensusContract = self.web3Fuse.eth.contract(abi=contractABI.CONSENSUS_ABI, address=contractABI.CONSENSUS_ADDRESS)
+
 		self.address = config['SETUP']['address']
 		self.apiFuseAccount = Account(address=config['SETUP']['address'])
-		print(self.web3.eth.getBalance(self.address)/1e18)
 
 		self.periodic(s, 10, self.checkSystemAttributes)
 		self.periodic(s, 10, self.checkIndoundEmails)

@@ -32,6 +32,7 @@ Monitor types:
 • Avaliable HDD space
 • Docker container checking  (currently only checks it's running)
 • ETH balance
+• Reads the consensus contract to check if the address is on the validators list and is currently validating
 ```
 
 Responds to email request using the following subject lines, the authorisedReceiver setting in the config file stops the response
